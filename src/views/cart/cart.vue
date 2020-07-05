@@ -1,12 +1,20 @@
 <template>
   <div>
-    <h3>这里是购物车</h3>
+    <cart-navbar/>
+    <cart-list/>
+    <cart-bottom-bar/>
   </div>
 </template>
 
 <script>
+  import CartNavbar from "./childrenComponents/CartNavbar";
+  import CartList from "./childrenComponents/CartList";
+  import CartBottomBar from "./childrenComponents/CartBottomBar";
   export default {
-    name: "cart"
+    name: "cart",
+    components:{
+      CartNavbar,CartList,CartBottomBar
+    }
   }
 </script>
 

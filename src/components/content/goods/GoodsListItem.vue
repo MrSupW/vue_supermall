@@ -1,6 +1,6 @@
 <template>
   <div class = "goods-item" @click="itemClick">
-    <img :src="imageUrl" alt="" @load="imageLoad">
+    <img v-lazy="imageUrl" alt="" @load="imageLoad">
     <div class = "goods-info">
       <p>{{goodsItem.title.replace('2018','2020')}}</p>
       <span class="discount_price">{{discountPrice| showPrice}}</span>

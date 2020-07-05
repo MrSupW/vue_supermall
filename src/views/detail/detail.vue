@@ -1,18 +1,20 @@
 <template>
   <div id = "detail">
     <detail-navbar ref="navbar" class="navbar" @titleClick="titleClick"/>
-    <scroll class="content" ref="scroll" :probeType="3" @scroll="contentScroll">
-      <detail-swiper :top-images="topImages"/>
-      <detail-base-info :goods = "goods"/>
-      <detail-shop-info :shop="shop"/>
-      <detail-goods-info :detail-info="detailInfo" @imageLoad = "imageLoad"/>
-      <detail-param-info ref="params" :param-info="paramInfo"/>
-      <detail-comment-info ref="comment" :comment-info="commentInfo"/>
-      <goods-list ref="recommend" :goods="recommendInfo"/>
-    </scroll>
+    <div class="wap">
+      <scroll class="content" ref="scroll" :probeType="3" @scroll="contentScroll">
+        <detail-swiper :top-images="topImages"/>
+        <detail-base-info :goods = "goods"/>
+        <detail-shop-info :shop="shop"/>
+        <detail-goods-info :detail-info="detailInfo" @imageLoad = "imageLoad"/>
+        <detail-param-info ref="params" :param-info="paramInfo"/>
+        <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+        <goods-list ref="recommend" :goods="recommendInfo"/>
+      </scroll>
+    </div>
     <detail-bottom-bar @addToCart = "addToCart"/>
     <back-top @click.native="backClick" v-show="isBackShow"/>
-
+<!--    <toast :message = "message" :is-show="isShow"/>-->
   </div>
 </template>
 
@@ -28,8 +30,9 @@
   import GoodsList from "../../components/content/goods/GoodsList";
   import {getDetail,getRecommend,Goods,Shop,GoodsParam} from "../../network/detail";
   import {itemListenerMixin,backTopMixin} from "../../common/mixin";
-
+  import  { mapActions } from 'vuex'
   import Scroll from "components/common/scroll/Scroll"
+  // import Toast from "../../components/common/toast/Toast";
   export default {
     name: "detail",
     components:{
@@ -42,7 +45,7 @@
       DetailCommentInfo,
       GoodsList,
       DetailBottomBar,
-      Scroll
+      Scroll,
     },
     data(){
       return {
@@ -55,10 +58,13 @@
         commentInfo: {},
         recommendInfo:[],
         itemImgListener :null,
-        themeTopYs:[]
+        themeTopYs:[],
+        // message:'',
+        // isShow : false,
       }
     },
     methods:{
+      ...mapActions(['addCart']),
       imageLoad(){
         // console.log('imageLoad');
         this.$refs.scroll.refresh()
@@ -88,7 +94,30 @@
         this.listenIsBackShow(position)
       },
       addToCart(){
-
+        // 获取商品信息
+        const product = {
+          image : this.topImages[0],
+          title : this.goods.title,
+          desc : this.goods.desc,
+          iid : this.iid,
+          price : this.goods.realPrice
+        }
+        // 将商品添加到购物车
+        // this.$store.commit('addCart',product)
+        // this.$store.dispatch('addCart',product).then(res => {
+        //   console.log(res)
+        // })
+        //  使用mapperActions
+        this.addCart(product).then(res => {
+          // console.log(res);
+          // this.message = res;
+          // this.isShow = true
+          // setTimeout(()=>{
+          //   this.message = ''
+          //   this.isShow = false
+          // },1500)
+          this.$toast.show(res)
+        })
       }
     },
     mixins:[itemListenerMixin,backTopMixin],
@@ -128,6 +157,7 @@
     },
     activated() {
       //混入
+      this.$refs.scroll.refresh()
     },
   }
 
@@ -138,11 +168,15 @@
     position: relative;
     z-index: 9;
     background-color: #fff;
-    height: 100vh;
+  }
+
+  .wap{
+     height: calc(100vh - 44px - 49px)
   }
 
   .content{
-    height: calc(100% - 44px);
+    height: 100%;
+    overflow: hidden;
   }
 
   .navbar{
