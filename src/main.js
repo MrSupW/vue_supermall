@@ -20,6 +20,7 @@ fastClick.attach(document.body)
 Vue.use(VueLazyload,{
   loading : require('../src/assets/img/common/placeholder.png')
 })
+//
 
 new Vue({
   render: h => h(App),
